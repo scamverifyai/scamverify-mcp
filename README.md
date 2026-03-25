@@ -2,6 +2,8 @@
 
 AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, text messages, emails, documents, and QR codes against 8M+ threat intelligence records from FTC, FCC, URLhaus, ThreatFox, and community reports.
 
+[![ScamVerify MCP server](https://glama.ai/mcp/servers/scamverifyai/scamverify-mcp/badges/card.svg)](https://glama.ai/mcp/servers/scamverifyai/scamverify-mcp)
+
 **Server URL:** `https://scamverify.ai/api/mcp`
 
 **Transport:** Streamable HTTP (stateless)
