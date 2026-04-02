@@ -1,12 +1,12 @@
 # ScamVerify MCP Server
 
-AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, text messages, emails, documents, and QR codes against 8M+ threat intelligence records from FTC, FCC, URLhaus, ThreatFox, and community reports.
+AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, text messages, emails, documents, and QR codes against 10M+ threat intelligence records from FTC, FCC, URLhaus, ThreatFox, and community reports.
 
 **Server URL:** `https://scamverify.ai/api/mcp`
 
-**Transport:** Streamable HTTP (stateless)
+**Transport:** Streamable HTTP (stateless) or stdio (local proxy)
 
-**Authentication:** OAuth 2.1 (PKCE) or API key
+**Authentication:** API key or OAuth 2.1 (PKCE)
 
 ## Tools (10)
 
@@ -34,8 +34,8 @@ AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, 
 
 ## Data Sources
 
-- **FTC Do Not Call Complaints** - 7.8M+ records with scam type classification
-- **FCC Consumer Complaints** - 440K+ telecom violation reports
+- **FTC Do Not Call Complaints** - 9.7M+ records with scam type classification
+- **FCC Consumer Complaints** - 443K+ telecom violation reports
 - **URLhaus** - 74K+ active malicious URL indicators
 - **ThreatFox** - 60K+ IOCs (indicators of compromise)
 - **Carrier Intelligence** - Line type, CNAM, VoIP detection, high-risk carrier flagging
@@ -43,9 +43,11 @@ AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, 
 
 ## Setup
 
-### Claude Desktop
+### Option 1: Remote Server (Recommended)
 
-Add to your `claude_desktop_config.json`:
+Connect directly to the hosted ScamVerify MCP server. No installation required.
+
+**Claude Desktop:**
 
 ```json
 {
@@ -61,7 +63,7 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-### Claude Desktop (OAuth)
+**Claude Desktop (OAuth - no API key needed):**
 
 ```json
 {
@@ -76,16 +78,7 @@ Add to your `claude_desktop_config.json`:
 
 When using without an API key, Claude Desktop will initiate the OAuth 2.1 flow. You'll be redirected to sign in at scamverify.ai and authorize access.
 
-### ChatGPT
-
-ScamVerify is available as a ChatGPT connector. Add it through the ChatGPT plugin/connector settings using:
-
-- **MCP URL:** `https://scamverify.ai/api/mcp`
-- **Auth:** OAuth
-
-### Cursor / Windsurf / Other MCP Clients
-
-Use the streamable HTTP endpoint with either authentication method:
+**Cursor / Windsurf / Other MCP Clients:**
 
 ```json
 {
@@ -97,21 +90,84 @@ Use the streamable HTTP endpoint with either authentication method:
 }
 ```
 
-### API Key Authentication
+**ChatGPT:**
+
+ScamVerify is available as a ChatGPT connector. Add it through the ChatGPT plugin/connector settings using:
+
+- **MCP URL:** `https://scamverify.ai/api/mcp`
+- **Auth:** OAuth
+
+### Option 2: Local Proxy (stdio)
+
+Run a local MCP server that proxies all tool calls to the ScamVerify API. Useful for MCP clients that only support stdio transport.
+
+**Install and run:**
+
+```bash
+npm install -g @scamverifyai/scamverify-mcp
+SCAMVERIFY_API_KEY=sv_live_... scamverify-mcp
+```
+
+**Or run directly with npx:**
+
+```bash
+SCAMVERIFY_API_KEY=sv_live_... npx @scamverifyai/scamverify-mcp
+```
+
+**Claude Desktop (stdio):**
+
+```json
+{
+  "mcpServers": {
+    "scamverify": {
+      "command": "npx",
+      "args": ["@scamverifyai/scamverify-mcp"],
+      "env": {
+        "SCAMVERIFY_API_KEY": "sv_live_..."
+      }
+    }
+  }
+}
+```
+
+**Docker:**
+
+```bash
+docker build -t scamverify-mcp .
+docker run -e SCAMVERIFY_API_KEY=sv_live_... scamverify-mcp
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SCAMVERIFY_API_KEY` | Yes | Your API key (prefix: `sv_live_` for production, `sv_test_` for testing) |
+| `SCAMVERIFY_API_URL` | No | Override the API base URL (default: `https://scamverify.ai`) |
+
+### Getting an API Key
 
 1. Sign up at [scamverify.ai](https://scamverify.ai)
 2. Go to Settings > API Keys
 3. Generate a key (prefix: `sv_live_` for production, `sv_test_` for testing)
-4. Pass it in the `Authorization: Bearer sv_live_...` header
 
 ### OAuth 2.1 Authentication
 
-The server supports OAuth 2.1 with PKCE (S256). Discovery endpoints:
+The remote server supports OAuth 2.1 with PKCE (S256). Discovery endpoints:
 
 - **Authorization Server:** `https://scamverify.ai/.well-known/oauth-authorization-server`
 - **Protected Resource:** `https://scamverify.ai/.well-known/oauth-protected-resource`
 
 OAuth scopes: `phone:lookup`, `url:lookup`, `text:analyze`, `email:analyze`, `usage:read`
+
+## Development
+
+```bash
+git clone https://github.com/scamverifyai/scamverify-mcp.git
+cd scamverify-mcp
+npm install
+npm run build
+SCAMVERIFY_API_KEY=sv_test_... npm start
+```
 
 ## Pricing
 
