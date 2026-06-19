@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/scamverifyai-scamverify-mcp-badge.png)](https://mseep.ai/app/scamverifyai-scamverify-mcp)
+
 # ScamVerify MCP Server
 
 AI-powered scam and threat verification MCP server. Verify phone numbers, URLs, text messages, emails, documents, and QR codes against 10M+ threat intelligence records from FTC, FCC, URLhaus, ThreatFox, and community reports.
